@@ -12,15 +12,15 @@ namespace Courses.GraphQL.Mutations
             _db = db;
         }
 
-        public async Task<cours> CreateCourse(string title, string description)
-        {
-            var course = new cours
-            {
-                Title = title,
-                Description = description
-            };
-            await _db.CreateCourseAsync(course);
-            return course;
-        }
+        //public async Task<cours> CreateCourse(string title, string description)
+        //{
+        //    var course = new cours
+        //    {
+        //        Title = title,
+        //        Description = description
+        //    };
+        //    await _db.CreateCourseAsync(course);
+        //    return course;
+        //}
     }
 }

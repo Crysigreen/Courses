@@ -1,4 +1,5 @@
-﻿using OnlineCoursesSubscription.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using OnlineCoursesSubscription.Models;
 using System;
 
 namespace Courses.GraphQL.Queries
@@ -12,34 +13,61 @@ namespace Courses.GraphQL.Queries
             _context = context;
         }
 
-        // Методы для чтения
-        public IEnumerable<users> ListUsers() => _context.users.ToList();
-        public users FindUser(int id) => _context.users.Find(id);
-
-        public IEnumerable<cours> ListCourses() => _context.courses.ToList();
-        public cours FindCourse(int id) => _context.courses.Find(id);
-
-        public IEnumerable<subscription> ListSubscriptions() => _context.subscriptions.ToList();
-        public subscription FindSubscription(int id) => _context.subscriptions.Find(id);
-
-        // Методы для создания
-        public async Task CreateUserAsync(users user)
+        public IEnumerable<users> ListUsers()
         {
-            _context.users.Add(user);
-            await _context.SaveChangesAsync();
+            return _context.users
+                           .AsNoTracking()
+                           .Include(u => u.Subscriptions)
+                           .ThenInclude(s => s.Course)
+                           .ToList();  // Завершает запрос
         }
 
-        public async Task CreateCourseAsync(cours course)
+        public users FindUser(int id)
         {
-            _context.courses.Add(course);
-            await _context.SaveChangesAsync();
+            return _context.users
+                           .AsNoTracking()
+                           .Include(u => u.Subscriptions)
+                           .ThenInclude(s => s.Course)
+                           .FirstOrDefault(u => u.Id == id);  // Завершает запрос
         }
 
-        public async Task CreateSubscriptionAsync(subscription subscription)
+        public IEnumerable<cours> ListCourses()
         {
-            _context.subscriptions.Add(subscription);
-            await _context.SaveChangesAsync();
+            return _context.courses
+                           .AsNoTracking()
+                           .Include(c => c.Subscriptions)
+                           .ThenInclude(s => s.User)
+                           .ToList();  // Завершает запрос
+        }
+
+        public cours FindCourse(int id)
+        {
+            return _context.courses
+                           .AsNoTracking()
+                           .Include(c => c.Subscriptions)
+                           .ThenInclude(s => s.User)
+                           .FirstOrDefault(c => c.Id == id);  // Завершает запрос
+        }
+
+        public IEnumerable<subscription> ListSubscriptions()
+        {
+            return _context.subscriptions
+                           .AsNoTracking()
+                           .Include(s => s.User)
+                           .Include(s => s.Course)
+                           .ToList();  // Завершает запрос
+        }
+
+        public subscription FindSubscription(int id)
+        {
+            return _context.subscriptions
+                           .AsNoTracking()
+                           .Include(s => s.User)
+                           .Include(s => s.Course)
+                           .FirstOrDefault(s => s.Id == id);  // Завершает запрос
         }
     }
+
+
 
 }

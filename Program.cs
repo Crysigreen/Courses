@@ -30,12 +30,11 @@ namespace Courses
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddDbContext<ApplicationDbContext>();
             builder.Services.AddScoped<ICourseStorage, CourseStorage>();
             builder.Services
                 .AddGraphQLServer()
-                .AddQueryType<UserQuery>()
-                .AddMutationType<UserMutation>()
+                .AddQueryType<GraphQL.Queries.Query>()
+                .AddMutationType<Mutation>()
                 .AddProjections()
                 .AddFiltering()
                 .AddSorting();

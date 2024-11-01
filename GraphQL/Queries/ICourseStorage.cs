@@ -14,10 +14,7 @@ namespace Courses.GraphQL.Queries
         IEnumerable<subscription> ListSubscriptions();
         subscription FindSubscription(int id);
 
-        // Методы для создания
-        Task CreateUserAsync(users user);
-        Task CreateCourseAsync(cours course);
-        Task CreateSubscriptionAsync(subscription subscription);
+        
     }
 
 }

@@ -12,15 +12,15 @@ namespace Courses.GraphQL.Mutations
             _db = db;
         }
 
-        public async Task<users> CreateUser(string name, string email)
-        {
-            var user = new users
-            {
-                Name = name,
-                Email = email
-            };
-            await _db.CreateUserAsync(user);
-            return user;
-        }
+        //public async Task<users> CreateUser(string name, string email)
+        //{
+        //    var user = new users
+        //    {
+        //        Name = name,
+        //        Email = email
+        //    };
+        //    await _db.CreateUserAsync(user);
+        //    return user;
+        //}
     }
 }
