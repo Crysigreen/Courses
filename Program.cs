@@ -27,7 +27,7 @@ namespace Courses
             builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScoped<ICourseStorage, CourseStorage>();

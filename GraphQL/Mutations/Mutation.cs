@@ -1,54 +1,56 @@
 ﻿using Courses.GraphQL.Queries;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using OnlineCoursesSubscription.Models;
 
 namespace Courses.GraphQL.Mutations
 {
     public class Mutation
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public Mutation(ApplicationDbContext context)
+        public Mutation(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
         public async Task<users> CreateUser(string name, string email)
         {
+            using var context = _contextFactory.CreateDbContext();
             var user = new users { Name = name, Email = email };
-            _context.users.Add(user);
-            await _context.SaveChangesAsync();
+            context.users.Add(user);
+            await context.SaveChangesAsync();
             return user;
         }
 
         public async Task<cours> CreateCourse(string title, string description)
         {
+            using var context = _contextFactory.CreateDbContext();
             var course = new cours { Title = title, Description = description };
-            _context.courses.Add(course);
-            await _context.SaveChangesAsync();
+            context.courses.Add(course);
+            await context.SaveChangesAsync();
             return course;
         }
 
         public async Task<subscription> CreateSubscription(int userId, int courseId)
         {
-            // Проверка: существует ли уже подписка на этот курс для пользователя
-            var existingSubscription = _context.subscriptions
-                                              .AsNoTracking()
-                                              .FirstOrDefault(s => s.UserId == userId && s.CourseId == courseId);
+            using var context = _contextFactory.CreateDbContext();
+
+            var existingSubscription = await context.subscriptions
+                                                    .AsNoTracking()
+                                                    .FirstOrDefaultAsync(s => s.UserId == userId && s.CourseId == courseId);
 
             if (existingSubscription != null)
             {
                 throw new Exception("Пользователь уже подписан на этот курс.");
             }
 
-            // Проверка: существует ли указанный курс
-            var course = _context.courses.AsNoTracking().FirstOrDefault(c => c.Id == courseId);
+            var course = await context.courses.AsNoTracking().FirstOrDefaultAsync(c => c.Id == courseId);
             if (course == null)
             {
                 throw new Exception("Курс не найден.");
             }
 
-            // Создание новой подписки
             var subscription = new subscription
             {
                 UserId = userId,
@@ -56,8 +58,8 @@ namespace Courses.GraphQL.Mutations
                 SubscribedOn = DateTime.UtcNow
             };
 
-            _context.subscriptions.Add(subscription);
-            await _context.SaveChangesAsync();
+            context.subscriptions.Add(subscription);
+            await context.SaveChangesAsync();
             return subscription;
         }
     }

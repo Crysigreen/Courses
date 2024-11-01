@@ -6,9 +6,9 @@ namespace Courses.GraphQL.Queries
 
     public class Query
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContextFactory<ApplicationDbContext> _context;
 
-        public Query(ApplicationDbContext context)
+        public Query(IDbContextFactory<ApplicationDbContext> context)
         {
             _context = context;
         }
@@ -17,7 +17,8 @@ namespace Courses.GraphQL.Queries
         [UseSorting]
         public IEnumerable<users> GetUsers()
         {
-            return _context.users
+            using var context = _context.CreateDbContext();
+            return context.users
                            .AsNoTracking()
                            .Include(u => u.Subscriptions)
                            .ThenInclude(s => s.Course)
@@ -28,7 +29,8 @@ namespace Courses.GraphQL.Queries
         [UseSorting]
         public IEnumerable<cours> GetCourses()
         {
-            return _context.courses
+            using var context = _context.CreateDbContext();
+            return context.courses
                            .AsNoTracking()
                            .Include(c => c.Subscriptions)
                            .ThenInclude(s => s.User)
@@ -39,7 +41,8 @@ namespace Courses.GraphQL.Queries
         [UseSorting]
         public IEnumerable<subscription> GetSubscriptions()
         {
-            return _context.subscriptions
+            using var context = _context.CreateDbContext();
+            return context.subscriptions
                            .AsNoTracking()
                            .Include(s => s.User)
                            .Include(s => s.Course)
@@ -49,7 +52,8 @@ namespace Courses.GraphQL.Queries
         // Получение курсов по пользователю
         public IEnumerable<cours> GetCoursesByUser(int userId)
         {
-            var subscriptions = _context.subscriptions
+            using var context = _context.CreateDbContext();
+            var subscriptions = context.subscriptions
                                         .AsNoTracking()
                                         .Where(s => s.UserId == userId)
                                         .Include(s => s.Course)
@@ -61,7 +65,8 @@ namespace Courses.GraphQL.Queries
         // Получение пользователей по курсу
         public IEnumerable<users> GetUsersByCourse(int courseId)
         {
-            var subscriptions = _context.subscriptions
+            using var context = _context.CreateDbContext();
+            var subscriptions = context.subscriptions
                                         .AsNoTracking()
                                         .Where(s => s.CourseId == courseId)
                                         .Include(s => s.User)
@@ -73,8 +78,9 @@ namespace Courses.GraphQL.Queries
         // Недавние подписки
         public IEnumerable<subscription> GetRecentSubscriptions()
         {
+            using var context = _context.CreateDbContext();
             var lastMonth = DateTime.UtcNow.AddMonths(-1);
-            return _context.subscriptions
+            return context.subscriptions
                            .AsNoTracking()
                            .Where(s => s.SubscribedOn >= lastMonth)
                            .Include(s => s.User)

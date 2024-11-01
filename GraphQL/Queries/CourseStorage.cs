@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using OnlineCoursesSubscription.Models;
 using System;
 
@@ -6,16 +7,17 @@ namespace Courses.GraphQL.Queries
 {
     public class CourseStorage : ICourseStorage
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContextFactory<ApplicationDbContext> _context;
 
-        public CourseStorage(ApplicationDbContext context)
+        public CourseStorage(IDbContextFactory<ApplicationDbContext> context)
         {
             _context = context;
         }
 
         public IEnumerable<users> ListUsers()
         {
-            return _context.users
+            using var context = _context.CreateDbContext();
+            return context.users
                            .AsNoTracking()
                            .Include(u => u.Subscriptions)
                            .ThenInclude(s => s.Course)
@@ -24,7 +26,8 @@ namespace Courses.GraphQL.Queries
 
         public users FindUser(int id)
         {
-            return _context.users
+            using var context = _context.CreateDbContext();
+            return context.users
                            .AsNoTracking()
                            .Include(u => u.Subscriptions)
                            .ThenInclude(s => s.Course)
@@ -33,7 +36,8 @@ namespace Courses.GraphQL.Queries
 
         public IEnumerable<cours> ListCourses()
         {
-            return _context.courses
+            using var context = _context.CreateDbContext();
+            return context.courses
                            .AsNoTracking()
                            .Include(c => c.Subscriptions)
                            .ThenInclude(s => s.User)
@@ -42,7 +46,8 @@ namespace Courses.GraphQL.Queries
 
         public cours FindCourse(int id)
         {
-            return _context.courses
+            using var context = _context.CreateDbContext();
+            return context.courses
                            .AsNoTracking()
                            .Include(c => c.Subscriptions)
                            .ThenInclude(s => s.User)
@@ -51,7 +56,8 @@ namespace Courses.GraphQL.Queries
 
         public IEnumerable<subscription> ListSubscriptions()
         {
-            return _context.subscriptions
+            using var context = _context.CreateDbContext();
+            return context.subscriptions
                            .AsNoTracking()
                            .Include(s => s.User)
                            .Include(s => s.Course)
@@ -60,7 +66,8 @@ namespace Courses.GraphQL.Queries
 
         public subscription FindSubscription(int id)
         {
-            return _context.subscriptions
+            using var context = _context.CreateDbContext();
+            return context.subscriptions
                            .AsNoTracking()
                            .Include(s => s.User)
                            .Include(s => s.Course)
