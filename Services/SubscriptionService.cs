@@ -14,35 +14,35 @@ namespace Courses.Services
             _userService = userService;
         }
 
-        public async Task<IEnumerable<Subscription>> GetAllAsync()
+        public async Task<IEnumerable<subscription>> GetAllAsync()
         {
-            return await _context.Subscriptions.ToListAsync();
+            return await _context.subscriptions.ToListAsync();
         }
 
-        public async Task<Subscription> GetByIdAsync(int id)
+        public async Task<subscription> GetByIdAsync(int id)
         {
-            return await _context.Subscriptions.FindAsync(id);
+            return await _context.subscriptions.FindAsync(id);
         }
 
-        public async Task<IEnumerable<Subscription>> GetByUserIdAsync(int userId)
+        public async Task<IEnumerable<subscription>> GetByUserIdAsync(int userId)
         {
-            return await _context.Subscriptions
+            return await _context.subscriptions
                 .Where(s => s.UserId == userId)
                 .Include(s => s.Course)
                 .ToListAsync();
         }
 
-        public async Task<Subscription> CreateAsync(Subscription subscription)
+        public async Task<subscription> CreateAsync(subscription subscription)
         {
             // Проверка на существование пользователя и курса
-            if (!await _context.Users.AnyAsync(u => u.Id == subscription.UserId))
+            if (!await _context.users.AnyAsync(u => u.Id == subscription.UserId))
                 throw new Exception($"Пользователь с Id {subscription.UserId} не найден.");
 
-            if (!await _context.Courses.AnyAsync(c => c.Id == subscription.CourseId))
+            if (!await _context.courses.AnyAsync(c => c.Id == subscription.CourseId))
                 throw new Exception($"Курс с Id {subscription.CourseId} не найден.");
 
             // Проверка на существующую подписку
-            if (await _context.Subscriptions.AnyAsync(s => s.UserId == subscription.UserId && s.CourseId == subscription.CourseId))
+            if (await _context.subscriptions.AnyAsync(s => s.UserId == subscription.UserId && s.CourseId == subscription.CourseId))
                 throw new Exception("Подписка уже существует.");
 
             // Проверка на максимальное количество подписок
@@ -51,14 +51,14 @@ namespace Courses.Services
 
             subscription.SubscribedOn = DateTime.UtcNow;
 
-            _context.Subscriptions.Add(subscription);
+            _context.subscriptions.Add(subscription);
             await _context.SaveChangesAsync();
             return subscription;
         }
 
-        public async Task<bool> UpdateAsync(Subscription subscription)
+        public async Task<bool> UpdateAsync(subscription subscription)
         {
-            var existingSubscription = await _context.Subscriptions.FindAsync(subscription.Id);
+            var existingSubscription = await _context.subscriptions.FindAsync(subscription.Id);
             if (existingSubscription == null)
                 return false;
 
@@ -72,11 +72,11 @@ namespace Courses.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var subscription = await _context.Subscriptions.FindAsync(id);
+            var subscription = await _context.subscriptions.FindAsync(id);
             if (subscription == null)
                 return false;
 
-            _context.Subscriptions.Remove(subscription);
+            _context.subscriptions.Remove(subscription);
             await _context.SaveChangesAsync();
             return true;
         }

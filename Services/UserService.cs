@@ -13,30 +13,30 @@ namespace Courses.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync()
+        public async Task<IEnumerable<users>> GetAllAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.users.ToListAsync();
         }
 
-        public async Task<User> GetByIdAsync(int id)
+        public async Task<users> GetByIdAsync(int id)
         {
-            return await _context.Users.FindAsync(id);
+            return await _context.users.FindAsync(id);
         }
 
-        public async Task<User> CreateAsync(User user)
+        public async Task<users> CreateAsync(users user)
         {
             // Проверка на уникальность email
             if (!await IsEmailUniqueAsync(user.Email))
                 throw new Exception("Пользователь с таким email уже существует.");
 
-            _context.Users.Add(user);
+            _context.users.Add(user);
             await _context.SaveChangesAsync();
             return user;
         }
 
-        public async Task<bool> UpdateAsync(User user)
+        public async Task<bool> UpdateAsync(users user)
         {
-            var existingUser = await _context.Users.FindAsync(user.Id);
+            var existingUser = await _context.users.FindAsync(user.Id);
             if (existingUser == null)
                 return false;
 
@@ -52,24 +52,24 @@ namespace Courses.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var user = await _context.Users.Include(u => u.Subscriptions).FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.users.Include(u => u.Subscriptions).FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
                 return false;
 
             // Удаляем связанные подписки
             if (user.Subscriptions.Any())
             {
-                _context.Subscriptions.RemoveRange(user.Subscriptions);
+                _context.subscriptions.RemoveRange(user.Subscriptions);
             }
 
-            _context.Users.Remove(user);
+            _context.users.Remove(user);
             await _context.SaveChangesAsync();
             return true;
         }
 
         public async Task<bool> IsEmailUniqueAsync(string email, int? userId = null)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _context.users.FirstOrDefaultAsync(u => u.Email == email);
             if (user == null)
                 return true;
 
@@ -81,7 +81,7 @@ namespace Courses.Services
 
         public async Task<bool> CanSubscribeAsync(int userId)
         {
-            var subscriptionCount = await _context.Subscriptions.CountAsync(s => s.UserId == userId);
+            var subscriptionCount = await _context.subscriptions.CountAsync(s => s.UserId == userId);
             return subscriptionCount < MaxSubscriptionsPerUser;
         }
     }

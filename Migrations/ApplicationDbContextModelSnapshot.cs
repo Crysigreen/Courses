@@ -22,27 +22,31 @@ namespace Courses.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("OnlineCoursesSubscription.Models.Course", b =>
+            modelBuilder.Entity("OnlineCoursesSubscription.Models.cours", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("description");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("title");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_courses");
 
-                    b.ToTable("Courses");
+                    b.ToTable("courses");
 
                     b.HasData(
                         new
@@ -65,30 +69,37 @@ namespace Courses.Migrations
                         });
                 });
 
-            modelBuilder.Entity("OnlineCoursesSubscription.Models.Subscription", b =>
+            modelBuilder.Entity("OnlineCoursesSubscription.Models.subscription", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CourseId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("courseid");
 
                     b.Property<DateTime>("SubscribedOn")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("subscribedon");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("userid");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_subscriptions");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("CourseId")
+                        .HasDatabaseName("ix_subscriptions_courseid");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_subscriptions_userid");
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("subscriptions");
 
                     b.HasData(
                         new
@@ -121,27 +132,31 @@ namespace Courses.Migrations
                         });
                 });
 
-            modelBuilder.Entity("OnlineCoursesSubscription.Models.User", b =>
+            modelBuilder.Entity("OnlineCoursesSubscription.Models.users", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("email");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_users");
 
-                    b.ToTable("Users");
+                    b.ToTable("users");
 
                     b.HasData(
                         new
@@ -164,31 +179,33 @@ namespace Courses.Migrations
                         });
                 });
 
-            modelBuilder.Entity("OnlineCoursesSubscription.Models.Subscription", b =>
+            modelBuilder.Entity("OnlineCoursesSubscription.Models.subscription", b =>
                 {
-                    b.HasOne("OnlineCoursesSubscription.Models.Course", "Course")
+                    b.HasOne("OnlineCoursesSubscription.Models.cours", "Course")
                         .WithMany("Subscriptions")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_subscriptions_courses_courseid");
 
-                    b.HasOne("OnlineCoursesSubscription.Models.User", "User")
+                    b.HasOne("OnlineCoursesSubscription.Models.users", "User")
                         .WithMany("Subscriptions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_subscriptions_users_userid");
 
                     b.Navigation("Course");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OnlineCoursesSubscription.Models.Course", b =>
+            modelBuilder.Entity("OnlineCoursesSubscription.Models.cours", b =>
                 {
                     b.Navigation("Subscriptions");
                 });
 
-            modelBuilder.Entity("OnlineCoursesSubscription.Models.User", b =>
+            modelBuilder.Entity("OnlineCoursesSubscription.Models.users", b =>
                 {
                     b.Navigation("Subscriptions");
                 });

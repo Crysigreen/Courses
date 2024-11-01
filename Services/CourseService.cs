@@ -12,35 +12,35 @@ namespace Courses.Services
             _context = context;
         }
 
-        public async Task<IEnumerable<Course>> GetAllAsync()
+        public async Task<IEnumerable<cours>> GetAllAsync()
         {
-            return await _context.Courses.ToListAsync();
+            return await _context.courses.ToListAsync();
         }
 
-        public async Task<Course> GetByIdAsync(int id)
+        public async Task<cours> GetByIdAsync(int id)
         {
-            return await _context.Courses.FindAsync(id);
+            return await _context.courses.FindAsync(id);
         }
 
-        public async Task<Course> CreateAsync(Course course)
+        public async Task<cours> CreateAsync(cours course)
         {
             // Проверка на уникальность названия курса
-            if (await _context.Courses.AnyAsync(c => c.Title == course.Title))
+            if (await _context.courses.AnyAsync(c => c.Title == course.Title))
                 throw new Exception("Курс с таким названием уже существует.");
 
-            _context.Courses.Add(course);
+            _context.courses.Add(course);
             await _context.SaveChangesAsync();
             return course;
         }
 
-        public async Task<bool> UpdateAsync(Course course)
+        public async Task<bool> UpdateAsync(cours course)
         {
-            var existingCourse = await _context.Courses.FindAsync(course.Id);
+            var existingCourse = await _context.courses.FindAsync(course.Id);
             if (existingCourse == null)
                 return false;
 
             // Проверка на уникальность названия курса
-            if (await _context.Courses.AnyAsync(c => c.Title == course.Title && c.Id != course.Id))
+            if (await _context.courses.AnyAsync(c => c.Title == course.Title && c.Id != course.Id))
                 throw new Exception("Курс с таким названием уже существует.");
 
             existingCourse.Title = course.Title;
@@ -51,17 +51,17 @@ namespace Courses.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var course = await _context.Courses.Include(c => c.Subscriptions).FirstOrDefaultAsync(c => c.Id == id);
+            var course = await _context.courses.Include(c => c.Subscriptions).FirstOrDefaultAsync(c => c.Id == id);
             if (course == null)
                 return false;
 
             // Удаляем связанные подписки
             if (course.Subscriptions.Any())
             {
-                _context.Subscriptions.RemoveRange(course.Subscriptions);
+                _context.subscriptions.RemoveRange(course.Subscriptions);
             }
 
-            _context.Courses.Remove(course);
+            _context.courses.Remove(course);
             await _context.SaveChangesAsync();
             return true;
         }

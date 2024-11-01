@@ -85,7 +85,7 @@ namespace OnlineCoursesSubscription.Controllers
 
         // POST: api/courses
         [HttpPost(Name = nameof(CreateCourse))]
-        public async Task<IActionResult> CreateCourse([FromBody] Course course)
+        public async Task<IActionResult> CreateCourse([FromBody] cours course)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -118,7 +118,7 @@ namespace OnlineCoursesSubscription.Controllers
 
         // PUT: api/courses/5
         [HttpPut("{id}", Name = nameof(UpdateCourse))]
-        public async Task<IActionResult> UpdateCourse(int id, [FromBody] Course course)
+        public async Task<IActionResult> UpdateCourse(int id, [FromBody] cours course)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

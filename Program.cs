@@ -1,8 +1,12 @@
 
+using Courses.GraphQL.Mutations;
+using Courses.GraphQL.Queries;
 using Courses.Services;
 using Microsoft.EntityFrameworkCore;
 using OnlineCoursesSubscription.Data;
 using OnlineCoursesSubscription.Models;
+using System;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Courses
 {
@@ -26,6 +30,16 @@ namespace Courses
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddDbContext<ApplicationDbContext>();
+            builder.Services.AddScoped<ICourseStorage, CourseStorage>();
+            builder.Services
+                .AddGraphQLServer()
+                .AddQueryType<UserQuery>()
+                .AddMutationType<UserMutation>()
+                .AddProjections()
+                .AddFiltering()
+                .AddSorting();
+
             var app = builder.Build();
 
             // ѕрименение миграций и заполнение данных
@@ -48,6 +62,8 @@ namespace Courses
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+
+            app.MapGraphQL();
 
 
             app.MapControllers();
