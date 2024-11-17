@@ -41,6 +41,7 @@ namespace OnlineCoursesSubscription.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
+
     }
 
     public class CourseResource : Resource
@@ -56,6 +57,7 @@ namespace OnlineCoursesSubscription.Models
         public int UserId { get; set; }
         public int CourseId { get; set; }
         public DateTime SubscribedOn { get; set; }
+        public DateTime Expireson { get; set; }
     }
 
 
